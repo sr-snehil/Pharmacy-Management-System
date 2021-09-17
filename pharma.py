@@ -3,12 +3,9 @@ from tkinter import *
 from tkinter import ttk
 from tkinter.font import Font
 from tkinter import messagebox
-
-
-
-from tkinter import messagebox
-
 from PIL import ImageTk, Image
+import os
+import sys
 
 
 class PharmacyManagementSystem:
@@ -41,7 +38,7 @@ class PharmacyManagementSystem:
                        fg="darkgreen", font=("times new roman", 50, "bold"), padx=2, pady=4)
         lbltitle.pack(side=TOP,fill=X)
 
-        img1= Image.open("E:\\PHARMA\\images\\download.png")
+        img1= Image.open("/home/snehil/PERSONAL/Projects/Python/Pharmacy Management System/images/download.png")
         img1=img1.resize((60,60),Image.ANTIALIAS)
         self.photoimg1=ImageTk.PhotoImage(img1)
         b1=Button(self.root,image=self.photoimg1,borderwidth=0)
@@ -84,8 +81,8 @@ class PharmacyManagementSystem:
         lblSearch.grid(row=0,column=5,sticky=W)
         
         self.search_var=StringVar()
-        search_combo=ttk.Combobox(ButtonFrame,textvariable=self.search_var,width=12,font=("arial",17,"bold"),state="readonly")
-        search_combo["values"]=("Ref_no","medName","LotNo")
+        search_combo=ttk.Combobox(ButtonFrame, textvariable=self.search_var, width=12,font=("arial",17,"bold"),state="readonly")
+        search_combo["values"]=["Ref_no","medName","LotNo"]
         search_combo.grid(row=0,column=6)
         search_combo.current(0)
         
@@ -255,8 +252,8 @@ class PharmacyManagementSystem:
         scroll_y=ttk.Scrollbar(Table_frame,orient=VERTICAL)
         scroll_y.pack(side=RIGHT,fill=Y)
         
-        self.pharmacy_table=ttk.Treeview(Table_frame,column=("reg","companyname","type","tabletname","lotno","issuedate",
-                                                             "expdate","uses","sideeffect","warning","dosage","price","productqt"),
+        self.pharmacy_table=ttk.Treeview(Table_frame,column=("reg","companyname","type","lotno","issuedate",
+                                                             "expdate","sideeffect","warning","dosage","price","productqt","tabletname","uses"),
                                          xscrollcommand=scroll_x.set,yscrollcommand=scroll_y.set)
           
         
@@ -270,17 +267,17 @@ class PharmacyManagementSystem:
         
         self.pharmacy_table.heading("reg",text="Referece No")
         self.pharmacy_table.heading("companyname",text="Company Name")
-        self.pharmacy_table.heading("type",text="Type of Medicine")
-        self.pharmacy_table.heading("tabletname",text="Medcine Name")
+        self.pharmacy_table.heading("type",text="Type of Medicine")        
         self.pharmacy_table.heading("lotno",text="Lot No")
         self.pharmacy_table.heading("issuedate",text="Issue Date")
-        self.pharmacy_table.heading("expdate",text="Expiry Date")
-        self.pharmacy_table.heading("uses",text="Uses")
+        self.pharmacy_table.heading("expdate",text="Expiry Date")        
         self.pharmacy_table.heading("sideeffect",text="Side Effects")
         self.pharmacy_table.heading("warning",text="Warning")
         self.pharmacy_table.heading("dosage",text="Dosage")
         self.pharmacy_table.heading("price",text="Price")
         self.pharmacy_table.heading("productqt",text="Product QT")
+        self.pharmacy_table.heading("uses",text="Uses")
+        self.pharmacy_table.heading("tabletname",text="Medcine Name")
         self.pharmacy_table.pack(fill=BOTH,expand=1)
         
         
@@ -309,13 +306,14 @@ class PharmacyManagementSystem:
         my_cursor=conn.cursor()
         s="insert into pharma(Ref,MedRef) values (%s,%s)"
         b1=(self.refmed_var.get(),self.addmed_var.get())
-        my_cursor.execute(s,b1)
-                                                                            
+        my_cursor.execute(s,b1)                                                                            
         conn.commit()
         self.fetchdata_med()
-        self.Medget_cursor()
-        conn.close()
-        messagebox.showinfo("Success","Medicine Added")
+        messagebox.showinfo("Success","Medicine Added and now restarting")
+        self.restart()
+    def restart(self):
+        python = sys.executable
+        os.execl(python, python, * sys.argv)
     def fetchdata_med(self):
         conn=mysql.connector.connect(user='root', password='snehilraj292',
                             host='localhost', database='mydata',
@@ -344,14 +342,15 @@ class PharmacyManagementSystem:
                                 host='localhost', database='mydata',
                                 auth_plugin='mysql_native_password')
             my_cursor=conn.cursor()
-            s="UPDATE pharma SET MedRef=%s where Ref=%s"
-            XX=self.refmed_var.get()
-            b1=(XX,self.addmed_var.get())
-            my_cursor.execute(s,b1)
+            # s="UPDATE pharma SET MedRef=%s where Ref=%s"
+            my_cursor.execute("Update pharma set Ref=%s,Medref=%s where Ref=%s",(self.refmed_var.get(),self.addmed_var.get(),self.refmed_var.get()))
+            # XX=self.refmed_var.get()
+            # b1=(XX,self.addmed_var.get())
+            # my_cursor.execute(s,b1)
             conn.commit()
             self.fetchdata_med()
             conn.close()
-            
+            self.restart()
             messagebox.showinfo("Success","Medicine Has been updated")
             
     def DeleteMed(self):
@@ -378,20 +377,22 @@ class PharmacyManagementSystem:
                             host='localhost', database='mydata',
                             auth_plugin='mysql_native_password')
         my_cursor=conn.cursor()
+        self.Medget_cursor()
+        
         my_cursor.execute("insert into pharmacy values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",(
                                                                                                    self.ref_var.get(),
                                                                                                    self.cmpName_var.get(),
-                                                                                                   self.typeMed_var.get(),
-                                                                                                   self.medName_var.get(),
+                                                                                                   self.typeMed_var.get(),                                                                                                   
                                                                                                    self.lot_var.get(),
                                                                                                    self.issuedate_var.get(),
-                                                                                                   self.expdate_var.get(),
-                                                                                                   self.uses_var.get(),
+                                                                                                   self.expdate_var.get(),                                                                                                   
                                                                                                    self.sideEfect_var.get(),
                                                                                                    self.warning_var.get(),
                                                                                                    self.dosage_var.get(),
                                                                                                    self.price_var.get(),
-                                                                                                   self.product_var.get()
+                                                                                                   self.product_var.get(),
+                                                                                                   self.medName_var.get(),
+                                                                                                   self.uses_var.get()
         ))
                                                                                                    
                                                                                                    
@@ -418,7 +419,7 @@ class PharmacyManagementSystem:
         cursor_row=self.pharmacy_table.focus()
         content=self.pharmacy_table.item(cursor_row)
         row=content["values"]
-        
+        print(row[0])
         self.ref_var.set(row[0]),
         self.cmpName_var.set(row[1]),
         self.typeMed_var.set(row[2]),
@@ -498,7 +499,16 @@ class PharmacyManagementSystem:
                                 host='localhost', database='mydata',
                                 auth_plugin='mysql_native_password')
         my_cursor=conn.cursor()
-        my_cursor.execute("select * from pharmacy where "+str(self.search_var.get())+" LIKE "+str(self.searchTxt_var.get()))
+        print(self.search_var.get())
+        print(self.searchTxt_var.get())
+        if self.search_var.get() == "Ref_no":
+            print("select * from pharmacy where " + str(self.search_var.get())+ " LIKE " +str(self.searchTxt_var.get()))
+            my_cursor.execute("select * from pharmacy where " + str(self.search_var.get())+ " LIKE " +str(self.searchTxt_var.get()))
+        else:
+            concat=self.searchTxt_var.get()+'%'
+            print(concat)
+            print("select * from pharmacy where " + str(self.search_var.get())+ " LIKE '{}'".format(concat))
+            my_cursor.execute("select * from pharmacy where " + str(self.search_var.get())+ " LIKE '{}'".format(concat))
         rows=my_cursor.fetchall()
         if len(rows)!=0:
             self.pharmacy_table.delete(*self.pharmacy_table.get_children())
