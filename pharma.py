@@ -419,22 +419,20 @@ class PharmacyManagementSystem:
         cursor_row=self.pharmacy_table.focus()
         content=self.pharmacy_table.item(cursor_row)
         row=content["values"]
-        print(row[0])
         self.ref_var.set(row[0]),
         self.cmpName_var.set(row[1]),
         self.typeMed_var.set(row[2]),
-        self.medName_var.set(row[3]),
-        self.lot_var.set(row[4]),
-        self.issuedate_var.set(row[5]),
-        self.expdate_var.set(row[6]),
-        self.uses_var.set(row[7]),
-        self.sideEfect_var.set(row[8]),
-        self.warning_var.set(row[9]),
-        self.dosage_var.set(row[10])
+        self.medName_var.set(row[11]),
+        self.lot_var.set(row[3]),
+        self.issuedate_var.set(row[4]),
+        self.expdate_var.set(row[5]),
+        self.uses_var.set(row[12]),
+        self.sideEfect_var.set(row[6]),
+        self.warning_var.set(row[7]),
+        self.dosage_var.set(row[8])
         
-        self.price_var.set(row[11]),
-        self.product_var.set(row[12]),
-        
+        self.price_var.set(row[9]),
+        self.product_var.set(row[10]),
     def Update(self):
         if self.ref_var.get()=="" or self.lot_var.get()=="":
             messagebox.showerror("Error","All Fields are Required")
@@ -507,8 +505,8 @@ class PharmacyManagementSystem:
         else:
             concat=self.searchTxt_var.get()+'%'
             print(concat)
-            print("select * from pharmacy where " + str(self.search_var.get())+ " LIKE '{}'".format(concat))
-            my_cursor.execute("select * from pharmacy where " + str(self.search_var.get())+ " LIKE '{}'".format(concat))
+            print("select * from pharmacy where " + str(self.search_var.get())+ " LIKE " +concat)
+            my_cursor.execute("select * from pharmacy where " + str(self.search_var.get())+ " LIKE '{}'" .format(concat))
         rows=my_cursor.fetchall()
         if len(rows)!=0:
             self.pharmacy_table.delete(*self.pharmacy_table.get_children())
